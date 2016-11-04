@@ -19,7 +19,7 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	 */
 
 	@Override
-	public String getPlayerName() { return "Random-Move Player"; } // <------------------ choose a name for your player here in your (ranamed) copy of this class (ok to simply use your normal name or your initials, but also consider including your login name so unique).
+	public String getPlayerName() { return "Shyamal's Bayes Net Player"; } // <------------------ choose a name for your player here in your (ranamed) copy of this class (ok to simply use your normal name or your initials, but also consider including your login name so unique).
 	
 	// Constructors.
 	public BayesNetPlayer_ShyamalAnadkat() {
