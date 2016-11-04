@@ -111,15 +111,15 @@ public class PlayNannon {
 // 	 "\n" +
   	 "       greedyHandCoded                  A hand-coded player that performs slightly better (63% wins against random) than jshavlik_med but not as good as jshavlik_smart.\n" +
   	 "\n" +
- 	 "       <someLoginName>                  Use the player in class BayesNetPlayer_someLoginName (must be in the same directory as this file)\n" +
+ 	 "       ShyamalAnadkat                   Use the player in class BayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
  	 "\n" + 
- 	 "       FullJointProbTablePlayer_<login> Will use the player in FullJointProbTablePlayer_login (must be in the same directory as this file)\n" +
+ 	 "       FullJointProbTablePlayer_ShyamalAnadkat Will use the player in FullJointProbTablePlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
   	 "\n" + 
- 	 "       BayesNetPlayer_<login>           Will use the player in BayesNetPlayer_login (must be in the same directory as this file)\n" +
+ 	 "       BayesNetPlayer_ShyamalAnadkat           Will use the player in BayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
   	 "\n" + 
- 	 "       NaiveBayesNetPlayer_<login>      Will use the player in NaiveBayesNetPlayer_login (must be in the same directory as this file)\n" +
+ 	 "       NaiveBayesNetPlayer_ShyamalAnadkat     Will use the player in NaiveBayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
   	 "\n" + 
-  	 "       HandCodedPlayer_<someLoginName>  Will use the (non-learning) player in HandCodedPlayer_someLoginName (must be in the same directory as this file)\n" +
+  	 "       HandCodedPlayer_ShyamalAnadkat   Will use the (non-learning) player in HandCodedPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
   	 "\n" +          
    	 "   - if only ONE argument provided, the second argument defaults to random\n" +
    	 "\n" +  

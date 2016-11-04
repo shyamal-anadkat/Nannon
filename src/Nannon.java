@@ -285,7 +285,7 @@ public class Nannon {
 		// Tell the players about the game board being used.
 		
 		if        (id.equalsIgnoreCase("random")             || id.equalsIgnoreCase("rand")) { // Allow some aliases.
-			return new RandomNannonPlayer(gb);
+			return new BayesNetPlayer_ShyamalAnadkat(gb);
 		} else if (id.equalsIgnoreCase("manual")) {
 			return new ManualPlayer(gb);
 		} else if (id.equalsIgnoreCase("GUI")) {
@@ -341,7 +341,7 @@ public class Nannon {
 //		} else if (id.equalsIgnoreCase("perceptron")) {
 //			return new JWS_PerceptronNannonPlayer(gb);	
 		} else if (id.equalsIgnoreCase("greedyHandCoded")    || id.equalsIgnoreCase("greedy") ) {
-			return new GreedyHandCodedPlayer(gb);	
+			return new HandCodedPlayer_ShyamalAnadkat(gb);	
 		} else if (id.startsWith("HandCodedPlayer_") ) { // Note: nothing prevents this player from learning (if necessary, we could add a flag that prevents hand-coded players from getting samples of games).
 			try {
 				ClassLoader loader = ClassLoader.getSystemClassLoader();
