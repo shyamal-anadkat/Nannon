@@ -15,10 +15,6 @@ import java.util.List;
  */
 public class HandCodedPlayer_ShyamalAnadkat extends NannonPlayer {
 
-	/** 
-	 * You should rename this file to:  HandCodedPlayer_yourLoginName.java
-	 * 
-	 */
 	public HandCodedPlayer_ShyamalAnadkat() {
 	}
 
@@ -26,8 +22,7 @@ public class HandCodedPlayer_ShyamalAnadkat extends NannonPlayer {
 		super(gameBoard);
 	}
 	@Override
-	public String getPlayerName() {
-		// Choose your own name for your hand-coded player (ok to use your normal name or initials, but consider including  your login name so unique).		
+	public String getPlayerName() {		
 		return "Shyamal's Hand-Coded Player";
 	}
 

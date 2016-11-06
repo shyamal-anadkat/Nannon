@@ -17,6 +17,19 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	/*
 	 * A good way to create your players is to edit these methods.  See PlayNannon.java for more details.
 	 */
+	private static int boardSize = NannonGameBoard.getCellsOnBoard();
+	private static int pieces = NannonGameBoard.getPiecesPerPlayer();
+	int homeX_win[] = new int[pieces+1];   //holds p(homeX=? | win) 
+	int homeX_lose[] = new int[pieces+1];  //holds p(homeX=? | !win)
+
+	int safeX_win[] = new int[pieces];
+	int safeX_lose[] = new int[pieces];
+
+	int board_win[][] = new int[boardSize][3]; //3 as X,O or blank 
+	int board_lose[][] = new int[boardSize][3];
+
+	int wins = 1 ; //remember m-estimates 
+	int losses = 1; 
 
 	@Override
 	public String getPlayerName() { return "Shyamal's Naive Bayes Net Player"; }
@@ -44,31 +57,32 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		//      (b) converts NannonGameBoard.movingFromHOME and NannonGameBoard.movingToSAFE to NannonGameBoard.cellsOnBoard,
 		//          (so you could then make arrays with dimension NannonGameBoard.cellsOnBoard+1)
 		//      (c) gets the current and next board configurations.
+		List<Integer> chosenMove = null; 
+		if (legalMoves != null) 
+			for (List<Integer> move : legalMoves) { // <----- be sure to drop the "false &&" !
 
-		if (false && legalMoves != null) for (List<Integer> move : legalMoves) { // <----- be sure to drop the "false &&" !
+				int fromCountingFromOne    = move.get(0);  // Convert below to an internal count-from-zero system.
+				int   toCountingFromOne    = move.get(1);			
+				int                 effect = move.get(2);  // See ManageMoveEffects.java for the possible values that can appear here.	
 
-			int fromCountingFromOne    = move.get(0);  // Convert below to an internal count-from-zero system.
-			int   toCountingFromOne    = move.get(1);			
-			int                 effect = move.get(2);  // See ManageMoveEffects.java for the possible values that can appear here.	
+				// Note we use 0 for both 'from' and 'to' because one can never move FROM SAFETY or TO HOME, so we save a memory cell.
+				int from = (fromCountingFromOne == NannonGameBoard.movingFromHOME ? 0 : fromCountingFromOne);
+				int to   = (toCountingFromOne   == NannonGameBoard.movingToSAFETY ? 0 : toCountingFromOne);
 
-			// Note we use 0 for both 'from' and 'to' because one can never move FROM SAFETY or TO HOME, so we save a memory cell.
-			int from = (fromCountingFromOne == NannonGameBoard.movingFromHOME ? 0 : fromCountingFromOne);
-			int to   = (toCountingFromOne   == NannonGameBoard.movingToSAFETY ? 0 : toCountingFromOne);
+				// The 'effect' of move is encoded in these four booleans:
+				boolean        hitOpponent = ManageMoveEffects.isaHit(      effect);  // Did this move 'land' on an opponent (sending it back to HOME)?
+				boolean       brokeMyPrime = ManageMoveEffects.breaksPrime( effect);  // A 'prime' is when two pieces from the same player are adjacent on the board;
+				// an opponent can NOT land on pieces that are 'prime' - so breaking up a prime of 
+				// might be a bad idea.
+				boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);  // Did this move lengthen (i.e., extend) an existing prime?
+				boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);  // Did this move CREATE a NEW prime? (A move cannot both extend and create a prime.)
 
-			// The 'effect' of move is encoded in these four booleans:
-			boolean        hitOpponent = ManageMoveEffects.isaHit(      effect);  // Did this move 'land' on an opponent (sending it back to HOME)?
-			boolean       brokeMyPrime = ManageMoveEffects.breaksPrime( effect);  // A 'prime' is when two pieces from the same player are adjacent on the board;
-			// an opponent can NOT land on pieces that are 'prime' - so breaking up a prime of 
-			// might be a bad idea.
-			boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);  // Did this move lengthen (i.e., extend) an existing prime?
-			boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);  // Did this move CREATE a NEW prime? (A move cannot both extend and create a prime.)
+				// Note that you can compute other effects than the four above (but you need to do it from the info in boardConfiguration, resultingBoard, and move).
 
-			// Note that you can compute other effects than the four above (but you need to do it from the info in boardConfiguration, resultingBoard, and move).
+				// See comments in updateStatistics() regarding how to use these.
+				int[] resultingBoard = gameBoard.getNextBoardConfiguration(boardConfiguration, move);  // You might choose NOT to use this - see updateStatistics().
 
-			// See comments in updateStatistics() regarding how to use these.
-			int[] resultingBoard = gameBoard.getNextBoardConfiguration(boardConfiguration, move);  // You might choose NOT to use this - see updateStatistics().
-
-			/* Here is what is in a board configuration vector.  There are also accessor functions in NannonGameBoard.java (starts at or around line 60).
+				/* Here is what is in a board configuration vector.  There are also accessor functions in NannonGameBoard.java (starts at or around line 60).
 
 			   	boardConfiguration[0] = whoseTurn;        // Ignore, since it is OUR TURN when we play, by definition. (But needed to compute getNextBoardConfiguration.)
         		boardConfiguration[1] = homePieces_playerX; 
@@ -81,12 +95,12 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
         		cells 7 to (6 + NannonGameBoard.cellsOnBoard) record what is on the board at each 'cell' (ie, board location).
         					- one of NannonGameBoard.playerX, NannonGameBoard.playerO, or NannonGameBoard.empty.
 
-			 */
+				 */
 
-			// DO SOMETHING HERE.             <-------------------------------------------------
-		}
+				// DO SOMETHING HERE.             <-------------------------------------------------
+			}
 
-		return Utils.chooseRandomElementFromThisList(legalMoves); // In you own code you should of course get rid of this line.
+		return chosenMove == null ? Utils.chooseRandomElementFromThisList(legalMoves): chosenMove; 
 	}
 
 	@SuppressWarnings("unused") // This prevents a warning from the "if (false)" below.

@@ -4,6 +4,6 @@ NannonGUI:  setBounds: width = 583, height = 415
 % This is the console of the Nannon GUI.
 % (Do a control-C here if the program appears to be hanging.)
 
-500,000 post burn-in games played so far.  Took 5 seconds.
-  Player X (Random-Move Player) won 183,811 games (36.76%) and
-  Player O (Shyamal's Hand-Coded Player) won 316,188 games (63.24%).
+500,000 post burn-in games played so far.  Took 7 seconds.
+  Player X (Shyamal's FullJointProbTable Player) won 320,505 games (64.10%) and
+  Player O (Shyamal's Bayes Net Player) won 179,494 games (35.90%).

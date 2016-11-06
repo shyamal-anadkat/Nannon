@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class NannonPlayer {
 	public NannonGameBoard gameBoard;
-	
+
 	boolean printProgress = true; // If false, turn off printing.
 
 	private int movesCountForPlayer;
@@ -30,14 +30,14 @@ public abstract class NannonPlayer {
 	abstract public void updateStatistics(boolean didIwinThisGame, List<int[]> allBoardConfigurationsThisGameForPlayer, List<Integer> allCountsOfPossibleMovesForPlayer, List<List<Integer>> allMovesThisGameForPlayer);
 
 	abstract public void reportLearnedModel();
-		
+
 	// Setter and Getters.
 	public NannonGameBoard getGameBoard()                          { return gameBoard; }
 	public void            setGameBoard(NannonGameBoard gameBoard) { this.gameBoard = gameBoard; }
-	
+
 	public boolean         isPrintProgress()                       { return printProgress; }
 	public void            setPrintProgress(boolean printProgress) { this.printProgress = printProgress; }
-	
+
 	// The Constructors.
 	public NannonPlayer() { 
 	}
@@ -52,16 +52,16 @@ public abstract class NannonPlayer {
 	public int getMoveNumber() {
 		return movesCountForPlayer;		
 	}
-	
+
 	// Players might want to use this to convert the number for a cell to handle HOME (H) and SAFE (S), assuming the board cells are converted to zero-based counting and the extra array location is used to represent HOME or SAFE (moves cannot be from SAFE nor be to HOME, so no need to worry about 'collisions' by over using one memory cell).
 	String convertFrom(int i) {
 		if (i >= NannonGameBoard.getCellsOnBoard()) { return "H"; }
 		return "" + (i + 1);
 	}
-	
+
 	String convertTo(int i) {
 		if (i >=  NannonGameBoard.getCellsOnBoard()) { return "S"; }
 		return "" + (i + 1);
 	}	
-	
+
 }
