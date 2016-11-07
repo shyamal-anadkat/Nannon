@@ -36,7 +36,7 @@ public class Utils {
 	// Another thing to note is the method randomInstance below; you can vary your runs by changing its value.
 
 	// Changing these will lead to different results (with the SAME 'seed' will get the SAME results every run, if nothing else changes in the code).
-	public static Random randomInstance = new Random(540); // new Random(12345678);  // new Random(248369); // new Random(135792468);
+	public static Random randomInstance = new Random(12345678); // new Random(12345678);  // new Random(248369); // new Random(135792468);
 
 	public  static boolean        runningInCondor  = false; // This gets set to true when running the class tourney in Condor, since there we don't want to hang awaiting user input.
 	private static BufferedReader inBufferedReader = null;

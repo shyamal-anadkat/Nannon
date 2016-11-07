@@ -96,9 +96,9 @@ public class HandCodedPlayer_ShyamalAnadkat extends NannonPlayer {
 	
 	@Override
 	public void reportLearnedModel() {
-		Utils.println("\n-------------------------------------------------");
+		Utils.println("\n--------------------------------------------------------------------------");
 		Utils.println("\n I (" + getPlayerName() + ") was born smart enough and don't try to learn.");
-		Utils.println("\n-------------------------------------------------");
+		Utils.println("\n--------------------------------------------------------------------------");
 	}
 
 }

@@ -150,8 +150,9 @@ public class PlayNannon {
 		}
 
 		String[] args = Utils.chopCommentFromArgs(argsRaw);
-		String   arg1 = "FullJointProbTablePlayer_ShyamalAnadkat"; // See argsSpecString for other options.
-		String   arg2 = "random";
+		String arg1 = "greedyHandCoded";
+		String arg2 = "FullJointProbTablePlayer_ShyamalAnadkat"; // See argsSpecString for other options.
+		//String   arg2 = "FullJointProbTablePlayer_Hayhurst";
 
 		if (args.length >= 1) { arg1 = args[0]; } // Override the defaults if args provided.
 		if (args.length >= 2) { arg2 = args[1]; }
@@ -164,9 +165,9 @@ public class PlayNannon {
 		Nannon.setGamesToPlay(numberPostBurninGamesToPlay + Nannon.getNumberOfGamesInBurnInPhase()); // Maybe play 5M (or 10M) games after the burn-in if doing a long run.		
 
 		Nannon.setUseGUItoWatch(true);       // Set this to 'true' to watch the two players after some burn-in training.
-		Nannon.setPlayThisManyPostBurninGamesBeforeVisualizing(numberPostBurninGamesToPlay - 5);  // If you wish to have some post burn-in training before watching games, set this to some number of games.
+		Nannon.setPlayThisManyPostBurninGamesBeforeVisualizing(numberPostBurninGamesToPlay - 2);  // If you wish to have some post burn-in training before watching games, set this to some number of games.
 		Nannon.setWaitBeforeEachMove(false);  // If true, will wait for user to click a button before progressing.
-		NannonGUI.setAnimationSpeed(50);      // Set this to 1-100 to vary speed of animation; 50 seems a good value, but will be machine-dependent (if 0 or less, than no waiting, ie drawing is as fast as possible).
+		NannonGUI.setAnimationSpeed(100);      // Set this to 1-100 to vary speed of animation; 50 seems a good value, but will be machine-dependent (if 0 or less, than no waiting, ie drawing is as fast as possible).
 
 		Nannon.playGames(arg1, arg2);
 	}

@@ -10,15 +10,19 @@
  *       Be sure to change "Random-Move Player" in getPlayerName() to something unique to you!
  */
 
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 
+ * @author SAnadkat
+ *
+ */
 public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
-	/*
-	 * A good way to create your players is to edit these methods.  See PlayNannon.java for more details.
-	 */
-	private static int boardSize = NannonGameBoard.getCellsOnBoard();
-	private static int pieces = NannonGameBoard.getPiecesPerPlayer();
+	// Reference : lecture ppt (Jude Shavlik - 2016) 
+	private static int boardSize = NannonGameBoard.getCellsOnBoard(); //6
+	private static int pieces = NannonGameBoard.getPiecesPerPlayer(); //3
 	int homeX_win[] = new int[pieces+1];   //holds p(homeX=? | win) 
 	int homeX_lose[] = new int[pieces+1];  //holds p(homeX=? | !win)
 
@@ -28,11 +32,11 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	int board_win[][] = new int[boardSize][3]; //3 as X,O or blank 
 	int board_lose[][] = new int[boardSize][3];
 
-	int wins = 1 ; //remember m-estimates 
-	int losses = 1; 
+	int winCnt = 1 ; //remember m-estimates 
+	int lossCnt = 1; 
 
 	@Override
-	public String getPlayerName() { return "Shyamal's Naive Bayes Net Player"; }
+	public String getPlayerName() { return "Shyamal's Naive Bayes Player"; }
 
 	// Constructors.
 	public NaiveBayesNetPlayer_ShyamalAnadkat() {
@@ -46,6 +50,17 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 	private void initialize() {
 		// Put things here needed for instance creation.
+		Arrays.fill(homeX_win, 1);
+		Arrays.fill(homeX_lose, 1);
+		Arrays.fill(safeX_win, 1);
+		Arrays.fill(safeX_lose, 1);
+
+		for(int i = 0; i < board_win.length; i++) {
+			for(int j = 0; j < board_win[0].length; j++){
+				board_win[i][j] = 1; 
+				board_lose[i][j] = 1; 
+			}
+		}
 	}
 
 	@SuppressWarnings("unused") // This prevents a warning from the "if (false)" below.
@@ -113,7 +128,7 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		// Do nothing with these in the random player (but hints are here for use in your players).	
 
 		// However, here are the beginnings of what you might want to do in your solution (see comments in 'chooseMove' as well).
-		if (false) { // <------------ Be sure to remove this 'false' *********************************************************************
+		// <------------ Be sure to remove this 'false' *********************************************************************
 			int numberOfMyMovesThisGame = allBoardConfigurationsThisGameForPlayer.size();	
 
 			for (int myMove = 0; myMove < numberOfMyMovesThisGame; myMove++) {
@@ -153,13 +168,13 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 				// DO SOMETHING HERE.  See chooseMove() for an explanation of what is stored in currentBoard and resultingBoard.
 			}
-		}
+		
 	}
 
 	@Override
 	public void reportLearnedModel() { // You can add some code here that reports what was learned, eg the most important feature for WIN and for LOSS.  And/or all the weights on your features.
 		Utils.println("\n-------------------------------------------------");
-		Utils.println("\nSorry, I (" + getPlayerName() + ") wasn't paying attention and didn't learn a thing ...");		
+		Utils.println(getPlayerName() + "learning model.");		
 		Utils.println("\n-------------------------------------------------");
 	}
 }

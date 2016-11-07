@@ -22,8 +22,6 @@ public class NannonGameBoard {
 	//    the second is the TO  (either 1 to cellsOnBoard or the constant 'movingToSAFE')                        - move.get(1) will access this
 	//    the third indicates the EFFECT of the move, see the constants in ManageMoveEffects.java  - move.get(2) will access this
 
-	
-
 	// The constructor.
 	public NannonGameBoard() {
 		board = new int[cellsOnBoard];

@@ -4,6 +4,34 @@ NannonGUI:  setBounds: width = 583, height = 415
 % This is the console of the Nannon GUI.
 % (Do a control-C here if the program appears to be hanging.)
 
-500,000 post burn-in games played so far.  Took 7 seconds.
-  Player X (Shyamal's FullJointProbTable Player) won 320,505 games (64.10%) and
-  Player O (Shyamal's Bayes Net Player) won 179,494 games (35.90%).
+500,000 post burn-in games played so far.  Took 6 seconds.
+  Player X (Shyamal's Hand-Coded Player) won 232,720 games (46.54%) and
+  Player O (Shyamal's FullJointProbTable Player) won 267,279 games (53.46%).
+1,000,000 post burn-in games played so far.  Took 12 seconds.
+  Player X (Shyamal's Hand-Coded Player) won 464,713 games (46.47%) and
+  Player O (Shyamal's FullJointProbTable Player) won 535,286 games (53.53%).
+
+Player X (Shyamal's Hand-Coded Player) won 464,713 games (46.47%) and Player O (Shyamal's FullJointProbTable Player) won 535,287 games (53.53%).
+It took 15 seconds to play 1,100,000 games. The numberOfGamesInBurnInPhase = 100,000.
+    The mean number of turns per game:                      6.86  // These stats are for post burn-in games only.
+    The mean number of no-possible-moves per game for X:    0.36
+    The mean number of no-possible-moves per game for O:    0.39
+    The mean number of forced moves per game for X:         2.86
+    The mean number of forced moves per game for O:         3.01
+
+--------------------------------------------------------------------------
+
+ I (Shyamal's Hand-Coded Player) was born smart enough and don't try to learn.
+
+--------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+Shyamal's FullJointProbTable Player learned and reporting a full joint probablity reasonor for Nannon.
+
+Best Values for Position 1 through 6 on board: 0,1,1,1,2,0
+Best Value for effect: 2
+Best value for pieces at Home: 0
+Best value for pieces at Safe: 2
+Best Die Value: 6
+--------------------------------------------------------------------------------------
