@@ -111,7 +111,7 @@ public class PlayNannon {
 					// 	 "\n" +
 					"       greedyHandCoded                  A hand-coded player that performs slightly better (63% wins against random) than jshavlik_med but not as good as jshavlik_smart.\n" +
 					"\n" +
-					"       ShyamalAnadkat                   Use the player in class BayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
+					"       BayesNetPlayer_ShyamalAnadkat                   Use the player in class BayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
 					"\n" + 
 					"       FullJointProbTablePlayer_ShyamalAnadkat Will use the player in FullJointProbTablePlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
 					"\n" + 
@@ -150,8 +150,8 @@ public class PlayNannon {
 		}
 
 		String[] args = Utils.chopCommentFromArgs(argsRaw);
-		String arg1 = "greedyHandCoded";
-		String arg2 = "FullJointProbTablePlayer_ShyamalAnadkat"; // See argsSpecString for other options.
+		String arg1 = "random";
+		String arg2 = "BayesNetPlayer_ShyamalAnadkat"; // See argsSpecString for other options.
 		//String   arg2 = "FullJointProbTablePlayer_Hayhurst";
 
 		if (args.length >= 1) { arg1 = args[0]; } // Override the defaults if args provided.

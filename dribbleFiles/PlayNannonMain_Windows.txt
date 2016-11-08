@@ -1,0 +1,9 @@
+% Running on host: Windows-PC
+NannonGUI:  setBounds: width = 633, height = 404
+
+% This is the console of the Nannon GUI.
+% (Do a control-C here if the program appears to be hanging.)
+
+500,000 post burn-in games played so far.  Took 7 seconds.
+  Player X (Shyamal's Bayes Net Player) won 250,154 games (50.03%) and
+  Player O (Shyamal's Bayes Net Player) won 249,845 games (49.97%).

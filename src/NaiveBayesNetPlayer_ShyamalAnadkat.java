@@ -20,19 +20,28 @@ import java.util.List;
  */
 public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
+
+	/*******DECLARE RANDOM VARIABLES**********/
 	// Reference : lecture ppt (Jude Shavlik - 2016) 
 	private static int boardSize = NannonGameBoard.getCellsOnBoard(); //6
 	private static int pieces = NannonGameBoard.getPiecesPerPlayer(); //3
 	int homeX_win[] = new int[pieces+1];   //holds p(homeX=? | win) 
 	int homeX_lose[] = new int[pieces+1];  //holds p(homeX=? | !win)
+	int safeX_win[] = new int[pieces+1];   //holds p(safeX=? | win)
+	int safeX_lose[] = new int[pieces+1];  //holds p(safeX=? | !win)
+	int effects_win[] = new int[12];       //holds p(effect=? | win)
+	int effects_loss[] = new int[12];      //holds p(effect=? |!win)
+	int homeO_win[] = new int[pieces+1];   //holds p(homeO=? | win) 
+	int homeO_lose[] = new int[pieces+1];  //holds p(homeO=? | !win)
+	int safeO_win[] = new int[pieces+1];   //holds p(safeO=? | !win)
+	int safeO_lose[] = new int[pieces+1];  //holds p(safeO=? | !win)
 
-	int safeX_win[] = new int[pieces];
-	int safeX_lose[] = new int[pieces];
-
+	//holds p( state of pieces on board ) | win and 
+	//      p( state of pieces on board ) | !win and 
 	int board_win[][] = new int[boardSize][3]; //3 as X,O or blank 
-	int board_lose[][] = new int[boardSize][3];
+	int board_lose[][] = new int[boardSize][3];  
 
-	int winCnt = 1 ; //remember m-estimates 
+	int winCnt = 1 ; //m-estimates 
 	int lossCnt = 1; 
 
 	@Override
@@ -54,6 +63,12 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		Arrays.fill(homeX_lose, 1);
 		Arrays.fill(safeX_win, 1);
 		Arrays.fill(safeX_lose, 1);
+		Arrays.fill(homeO_win, 1);
+		Arrays.fill(homeO_lose, 1);
+		Arrays.fill(safeO_win, 1);
+		Arrays.fill(safeO_lose, 1);
+		Arrays.fill(effects_win, 1);
+		Arrays.fill(effects_loss, 1);
 
 		for(int i = 0; i < board_win.length; i++) {
 			for(int j = 0; j < board_win[0].length; j++){
@@ -67,6 +82,7 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	@Override
 	public List<Integer> chooseMove(int[] boardConfiguration, List<List<Integer>> legalMoves) {
 
+		double bestProb = Integer.MIN_VALUE;
 		// Below is some code you might want to use in your solution.
 		//      (a) converts to zero-based counting for the cell locations
 		//      (b) converts NannonGameBoard.movingFromHOME and NannonGameBoard.movingToSAFE to NannonGameBoard.cellsOnBoard,
@@ -112,7 +128,37 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 				 */
 
-				// DO SOMETHING HERE.             <-------------------------------------------------
+				// P(Random Variable given Win) conditional probablities 
+				double homeXGivenWin = (double) homeX_win[resultingBoard[1]] /(double) winCnt;
+				double safeXGivenWin = (double) safeX_win[resultingBoard[3]]/ (double) winCnt;
+				double homeOGivenWin = (double) homeO_win[resultingBoard[2]] / (double) winCnt;
+				double safeOGivenWin = (double) safeO_win[resultingBoard[4]]/ (double) winCnt;
+
+				// P(random variable given Loss) conditional probs 
+				double homeXGivenLoss = (double) homeX_lose[resultingBoard[1]] /(double) lossCnt;
+				double safeXGivenLoss = (double) safeX_lose[resultingBoard[3]]/ (double) lossCnt;
+				double homeOGivenLoss = (double) homeO_lose[resultingBoard[2]] / (double) lossCnt;
+				double safeOGivenLoss = (double) safeO_lose[resultingBoard[4]]/ (double) lossCnt;
+
+				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
+				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt; 
+				double stateOfBoardGivenWin; 
+				double stateOfBoardGivenLoss; 
+
+				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
+				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
+
+
+				//assuming independence so we simply multiply them 
+				double bestWinProb = (homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
+						(double)     (homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
+
+
+				if (bestWinProb > bestProb) {
+					bestProb = bestWinProb; 
+					chosenMove = move; 
+				}
+
 			}
 
 		return chosenMove == null ? Utils.chooseRandomElementFromThisList(legalMoves): chosenMove; 
@@ -129,52 +175,71 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 		// However, here are the beginnings of what you might want to do in your solution (see comments in 'chooseMove' as well).
 		// <------------ Be sure to remove this 'false' *********************************************************************
-			int numberOfMyMovesThisGame = allBoardConfigurationsThisGameForPlayer.size();	
+		int numberOfMyMovesThisGame = allBoardConfigurationsThisGameForPlayer.size();	
+		if (didIwinThisGame) {
+			winCnt++;
+		} else {
+			lossCnt++;
+		}
 
-			for (int myMove = 0; myMove < numberOfMyMovesThisGame; myMove++) {
-				int[]         currentBoard        = allBoardConfigurationsThisGameForPlayer.get(myMove);
-				int           numberPossibleMoves = allCountsOfPossibleMovesForPlayer.get(myMove);
-				List<Integer> moveChosen          = allMovesThisGameForPlayer.get(myMove);
-				int[]         resultingBoard      = (numberPossibleMoves < 1 ? currentBoard // No move possible, so board is unchanged.
-						: gameBoard.getNextBoardConfiguration(currentBoard, moveChosen));
 
-				// You should compute the statistics needed for a Bayes Net for any of these problem formulations:
-				//
-				//     prob(win | currentBoard and chosenMove and chosenMove's Effects)  <--- this is what I (Jude) did, but mainly because at that point I had not yet written getNextBoardConfiguration()
-				//     prob(win | resultingBoard and chosenMove's Effects)               <--- condition on the board produced and also on the important changes from the prev board
-				//
-				//     prob(win | currentBoard and chosenMove)                           <--- if we ignore 'chosenMove's Effects' we would be more in the spirit of a State Board Evaluator (SBE)
-				//     prob(win | resultingBoard)                                        <--- but it seems helpful to know something about the impact of the chosen move (ie, in the first two options)
-				//
-				//     prob(win | currentBoard)                                          <--- if you estimate this, be sure when CHOOSING moves you apply to the NEXT boards (since when choosing moves, one needs to score each legal move).
+		for (int myMove = 0; myMove < numberOfMyMovesThisGame; myMove++) {
+			int[]         currentBoard        = allBoardConfigurationsThisGameForPlayer.get(myMove);
+			int           numberPossibleMoves = allCountsOfPossibleMovesForPlayer.get(myMove);
+			List<Integer> moveChosen          = allMovesThisGameForPlayer.get(myMove);
+			int[]         resultingBoard      = (numberPossibleMoves < 1 ? currentBoard // No move possible, so board is unchanged.
+					: gameBoard.getNextBoardConfiguration(currentBoard, moveChosen));
 
-				if (numberPossibleMoves < 1) { continue; } // If NO moves possible, nothing to learn from (it is up to you if you want to learn for cases where there is a FORCED move, ie only one possible move).
+			// You should compute the statistics needed for a Bayes Net for any of these problem formulations:
+			//
+			//     prob(win | currentBoard and chosenMove and chosenMove's Effects)  <--- this is what I (Jude) did, but mainly because at that point I had not yet written getNextBoardConfiguration()
+			//     prob(win | resultingBoard and chosenMove's Effects)               <--- condition on the board produced and also on the important changes from the prev board
+			//
+			//     prob(win | currentBoard and chosenMove)                           <--- if we ignore 'chosenMove's Effects' we would be more in the spirit of a State Board Evaluator (SBE)
+			//     prob(win | resultingBoard)                                        <--- but it seems helpful to know something about the impact of the chosen move (ie, in the first two options)
+			//
+			//     prob(win | currentBoard)                                          <--- if you estimate this, be sure when CHOOSING moves you apply to the NEXT boards (since when choosing moves, one needs to score each legal move).
 
-				// Convert to our internal count-from-zero system.
-				// A move is a list of three integers.  Their meanings should be clear from the variable names below.
-				int fromCountingFromOne = moveChosen.get(0);  // Convert below to an internal count-from-zero system.
-				int   toCountingFromOne = moveChosen.get(1);
-				int              effect = moveChosen.get(2);  // See ManageMoveEffects.java for the possible values that can appear here. Also see the four booleans below.
+			if (numberPossibleMoves < 1) { continue; } // If NO moves possible, nothing to learn from (it is up to you if you want to learn for cases where there is a FORCED move, ie only one possible move).
 
-				// Note we use 0 for both 'from' and 'to' because one can never move FROM SAFETY or TO HOME, so we save a memory cell.
-				int from = (fromCountingFromOne == NannonGameBoard.movingFromHOME ? 0 : fromCountingFromOne);
-				int to   = (toCountingFromOne   == NannonGameBoard.movingToSAFETY ? 0 : toCountingFromOne);
+			// Convert to our internal count-from-zero system.
+			// A move is a list of three integers.  Their meanings should be clear from the variable names below.
+			int fromCountingFromOne = moveChosen.get(0);  // Convert below to an internal count-from-zero system.
+			int   toCountingFromOne = moveChosen.get(1);
+			int              effect = moveChosen.get(2);  // See ManageMoveEffects.java for the possible values that can appear here. Also see the four booleans below.
 
-				// The 'effect' of move is encoded in these four booleans:
-				boolean        hitOpponent = ManageMoveEffects.isaHit(      effect); // Explained in chooseMove() above.
-				boolean       brokeMyPrime = ManageMoveEffects.breaksPrime( effect);
-				boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);
-				boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);
+			// Note we use 0 for both 'from' and 'to' because one can never move FROM SAFETY or TO HOME, so we save a memory cell.
+			int from = (fromCountingFromOne == NannonGameBoard.movingFromHOME ? 0 : fromCountingFromOne);
+			int to   = (toCountingFromOne   == NannonGameBoard.movingToSAFETY ? 0 : toCountingFromOne);
 
-				// DO SOMETHING HERE.  See chooseMove() for an explanation of what is stored in currentBoard and resultingBoard.
+			// The 'effect' of move is encoded in these four booleans:
+			boolean hitOpponent = ManageMoveEffects.isaHit(      effect); // Explained in chooseMove() above.
+			boolean brokeMyPrime = ManageMoveEffects.breaksPrime( effect);
+			boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);
+			boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);
+
+			if(didIwinThisGame) {
+				homeX_win[resultingBoard[1]]++;
+				safeX_win[resultingBoard[3]]++;
+				homeO_win[resultingBoard[2]]++;
+				safeO_win[resultingBoard[4]]++;
+				effects_win[effect]++;
+			} else {
+				homeX_lose[resultingBoard[1]]++;
+				safeX_lose[resultingBoard[3]]++;
+				homeO_lose[resultingBoard[2]]++;
+				safeO_lose[resultingBoard[4]]++;
+				effects_loss[effect]++;
 			}
-		
+
+		}
+
 	}
 
 	@Override
 	public void reportLearnedModel() { // You can add some code here that reports what was learned, eg the most important feature for WIN and for LOSS.  And/or all the weights on your features.
 		Utils.println("\n-------------------------------------------------");
-		Utils.println(getPlayerName() + "learning model.");		
+		Utils.println(getPlayerName() + "learning model !!");		
 		Utils.println("\n-------------------------------------------------");
 	}
 }
