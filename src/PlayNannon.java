@@ -150,7 +150,7 @@ public class PlayNannon {
 		}
 
 		String[] args = Utils.chopCommentFromArgs(argsRaw);
-		String   arg1 = "FullJointProbTablePlayer_ShyamalAnadkat"; // See argsSpecString for other options.
+		String   arg1 = "BayesNetPlayer_rasmith9"; // See argsSpecString for other options.
 		String   arg2 = "random";
 
 		if (args.length >= 1) { arg1 = args[0]; } // Override the defaults if args provided.

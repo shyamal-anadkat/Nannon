@@ -1,15 +1,7 @@
+
 /**
- * Copyrighted 2013 by Jude Shavlik.  Maybe be freely used for non-profit educational purposes.
+ * SAnadkat
  */
-
-/*
- * A player that simply random chooses from among the possible moves.
- * 
- * NOTE: I (Jude) recommend you COPY THIS TO YOUR PLAYER (NannonPlayer_yourLoginName.java) AND THEN EDIT IN THAT FILE.
- * 
- *       Be sure to change "Random-Move Player" in getPlayerName() to something unique to you!
- */
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +14,8 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 	private int[][][][][][][][][][][] fullState_lost = new int[3][3][3][3][3][3][12][4][4][4][4];
 	private int[] best_config = new int[12];
 	private int[] bad_config = new int[12];
+	private double globalBest = Integer.MIN_VALUE;
+	private double globalWorst = Integer.MAX_VALUE;
 	private int numWins = 1;    //Around K/10 where k is numCells
 	private int numLosses = 1;  //Around K/10 
 	private int numGames = 2;   //Explicit counter 
@@ -86,7 +80,6 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 		//      (c) gets the current and next board configurations.
 		List<Integer> chosenMove = null;
 		double best_prob = Integer.MIN_VALUE; 
-		double worst_prob = Integer.MAX_VALUE;
 		int numLegalMoves = legalMoves.size();
 
 		if (legalMoves != null) 
@@ -139,21 +132,10 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				if(bestRatio >= best_prob) {
 					best_prob = bestRatio; 
 					chosenMove = move; 
-					best_config[0] = resultingBoard[7];
-					best_config[1] = resultingBoard[8];
-					best_config[2] = resultingBoard[9];
-					best_config[3] = resultingBoard[10];
-					best_config[4] = resultingBoard[11];
-					best_config[5] = resultingBoard[12];
-					best_config[6] = effect;
-					best_config[7] = atHomeX;
-					best_config[8] = atSafeX;
-					best_config[9] = atHomeO;
-					best_config[10] = atSafeO;
-					best_config[11] = dieVal;
+
 				} 
-				if(bestRatio < worst_prob) {
-					worst_prob = bestRatio;
+				if(bestRatio < globalWorst) {
+					globalWorst = bestRatio;
 					bad_config[0] = resultingBoard[7];
 					bad_config[1] = resultingBoard[8];
 					bad_config[2] = resultingBoard[9];
@@ -166,6 +148,21 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 					bad_config[9] = atHomeO;
 					bad_config[10] = atSafeO;
 					bad_config[11] = dieVal;
+				} 
+				if (bestRatio > globalBest) {
+					globalBest = bestRatio; 
+					best_config[0] = resultingBoard[7];
+					best_config[1] = resultingBoard[8];
+					best_config[2] = resultingBoard[9];
+					best_config[3] = resultingBoard[10];
+					best_config[4] = resultingBoard[11];
+					best_config[5] = resultingBoard[12];
+					best_config[6] = effect;
+					best_config[7] = atHomeX;
+					best_config[8] = atSafeX;
+					best_config[9] = atHomeO;
+					best_config[10] = atSafeO;
+					best_config[11] = dieVal;
 				}
 
 			}

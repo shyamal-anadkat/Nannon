@@ -43,6 +43,7 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 	int winCnt = 1 ; //m-estimates 
 	int lossCnt = 1; 
+	double globalBestOdds = Integer.MIN_VALUE;
 
 	@Override
 	public String getPlayerName() { return "Shyamal's Bayes Net Player"; }
@@ -134,9 +135,7 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
         		cells 7 to (6 + NannonGameBoard.cellsOnBoard) record what is on the board at each 'cell' (ie, board location).
         					- one of NannonGameBoard.playerX, NannonGameBoard.playerO, or NannonGameBoard.empty.
-
 				 */
-
 				// P(Random Variable given Win) conditional probablities 
 				// WinCnt gives me higher success than prob of Win so Im sticking to this for now 
 				double homeXGivenWin = (double) homeX_win[resultingBoard[1]] /(double) winCnt;
@@ -161,9 +160,6 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
 				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt;  
 
-				
-
-
 				double beyondNBWin = homeX_win[resultingBoard[1]]* safeX_win[resultingBoard[3]]
 						* homeO_win[resultingBoard[2]]*safeO_win[resultingBoard[4]]* effects_win[effect]; 
 				double beyondNBLoss = homeX_lose[resultingBoard[1]]*
@@ -173,13 +169,16 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
 				//assuming independence so we simply multiply them 
-				double bestOdds = ( homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
-						(double)     ( homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
-
+				double bestOdds = ( beyondNBWin* homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
+						(double)     ( beyondNBLoss* homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
 
 				if (bestOdds > bestProb) {
 					bestProb = bestOdds; 
 					chosenMove = move; 
+				}
+
+				if(bestOdds > globalBestOdds) {
+					globalBestOdds = bestOdds;
 				}
 
 			}
@@ -214,13 +213,11 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 					: gameBoard.getNextBoardConfiguration(currentBoard, moveChosen));
 
 			// You should compute the statistics needed for a Bayes Net for any of these problem formulations:
-			//
 			//     prob(win | currentBoard and chosenMove and chosenMove's Effects)  <--- this is what I (Jude) did, but mainly because at that point I had not yet written getNextBoardConfiguration()
 			//     prob(win | resultingBoard and chosenMove's Effects)               <--- condition on the board produced and also on the important changes from the prev board
 			//
 			//     prob(win | currentBoard and chosenMove)                           <--- if we ignore 'chosenMove's Effects' we would be more in the spirit of a State Board Evaluator (SBE)
 			//     prob(win | resultingBoard)                                        <--- but it seems helpful to know something about the impact of the chosen move (ie, in the first two options)
-			//
 			//     prob(win | currentBoard)                                          <--- if you estimate this, be sure when CHOOSING moves you apply to the NEXT boards (since when choosing moves, one needs to score each legal move).
 
 			if (numberPossibleMoves < 1) { continue; } // If NO moves possible, nothing to learn from (it is up to you if you want to learn for cases where there is a FORCED move, ie only one possible move).
@@ -267,7 +264,8 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	@Override
 	public void reportLearnedModel() { // You can add some code here that reports what was learned, eg the most important feature for WIN and for LOSS.  And/or all the weights on your features.
 		Utils.println("\n-------------------------------------------------");
-		Utils.println(getPlayerName() + "learning model !!");		
+		Utils.println(getPlayerName() + "learning model !!");	
+		Utils.println("Best winning odds: "+globalBestOdds);
 		Utils.println("\n-------------------------------------------------");
 	}
 }

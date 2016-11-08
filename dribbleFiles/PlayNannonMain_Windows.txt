@@ -5,42 +5,5 @@ NannonGUI:  setBounds: width = 633, height = 404
 % (Do a control-C here if the program appears to be hanging.)
 
 500,000 post burn-in games played so far.  Took 7 seconds.
-  Player X (Shyamal's FullJointProbTable Player) won 333,686 games (66.74%) and
-  Player O (Random-Move Player) won 166,313 games (33.26%).
-1,000,000 post burn-in games played so far.  Took 12 seconds.
-  Player X (Shyamal's FullJointProbTable Player) won 667,714 games (66.77%) and
-  Player O (Random-Move Player) won 332,285 games (33.23%).
-
-Player X (Shyamal's FullJointProbTable Player) won 667,715 games (66.77%) and Player O (Random-Move Player) won 332,285 games (33.23%).
-It took 12 seconds to play 1,100,000 games. The numberOfGamesInBurnInPhase = 100,000.
-    The mean number of turns per game:                      6.98  // These stats are for post burn-in games only.
-    The mean number of no-possible-moves per game for X:    0.23
-    The mean number of no-possible-moves per game for O:    0.33
-    The mean number of forced moves per game for X:         2.95
-    The mean number of forced moves per game for O:         2.75
-
---------------------------------------------------------------------------------------
-
-Shyamal's FullJointProbTable Player learned and reporting a full joint probablity reasonor for Nannon.
-
-Best Values for Position 1 through 6 on board: 0,0,2,0,0,0
-Best Value for effect: 0
-Best value for pieces at Home for X: 1
-Best value for pieces at Safe for X: 2
-Best value for pieces at Home for O: 0
-Best value for pieces at Safe for O: 0
-Best Die Value: 4
-Bad Values for Position 1 through 6 on board: 0,0,2,1,1,0
-Bad Value for effect: 0
-Bad value for pieces at Home for X: 0
-Bad value for pieces at Safe for X: 1
-Bad value for pieces at Home for O: 0
-Bad value for pieces at Safe for O: 0
-Bad Die Value: 4
---------------------------------------------------------------------------------------
-
--------------------------------------------------
-
-Sorry, I (Random-Move Player) wasn't paying attention and didn't learn a thing ...
-
--------------------------------------------------
+  Player X (BayesNetPlayer_rasmith9) won 285,682 games (57.14%) and
+  Player O (Random-Move Player) won 214,317 games (42.86%).

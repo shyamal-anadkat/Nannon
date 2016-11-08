@@ -40,6 +40,12 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	int board_win[][] = new int[boardSize][3]; //3 as X,O or blank 
 	int board_lose[][] = new int[boardSize][3];  
 
+	//best and worst configs for learned models 
+	int best_config[] = new int[6];
+	int bad_config[] = new int[6];
+	private double globalBestHomeX, globalBestHomeO, globalBestSafeX, globalBestSafeO, globalBestEffect = Integer.MIN_VALUE;
+	private double globalWorstHomeX, globalWorstHomeO, globalWorstSafeX, globalWorstSafeO, globalWorstEffect = Integer.MAX_VALUE;
+
 	int winCnt = 1 ; //m-estimates 
 	int lossCnt = 1; 
 
@@ -56,6 +62,9 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		initialize();
 	}
 
+	/**
+	 * Initializing probs to 1 - m estimates
+	 */
 	private void initialize() {
 		// Put things here needed for instance creation.
 		Arrays.fill(homeX_win, 1);
@@ -82,6 +91,7 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	public List<Integer> chooseMove(int[] boardConfiguration, List<List<Integer>> legalMoves) {
 
 		double bestProb = Integer.MIN_VALUE;
+
 		// Below is some code you might want to use in your solution.
 		//      (a) converts to zero-based counting for the cell locations
 		//      (b) converts NannonGameBoard.movingFromHOME and NannonGameBoard.movingToSAFE to NannonGameBoard.cellsOnBoard,
@@ -108,7 +118,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);  // Did this move CREATE a NEW prime? (A move cannot both extend and create a prime.)
 
 				// Note that you can compute other effects than the four above (but you need to do it from the info in boardConfiguration, resultingBoard, and move).
-
 				// See comments in updateStatistics() regarding how to use these.
 				int[] resultingBoard = gameBoard.getNextBoardConfiguration(boardConfiguration, move);  // You might choose NOT to use this - see updateStatistics().
 
@@ -124,7 +133,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
         		cells 7 to (6 + NannonGameBoard.cellsOnBoard) record what is on the board at each 'cell' (ie, board location).
         					- one of NannonGameBoard.playerX, NannonGameBoard.playerO, or NannonGameBoard.empty.
-
 				 */
 
 				// P(Random Variable given Win) conditional probablities 
@@ -138,21 +146,44 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double safeXGivenLoss = (double) safeX_lose[resultingBoard[3]]/ (double) lossCnt;
 				double homeOGivenLoss = (double) homeO_lose[resultingBoard[2]] / (double) lossCnt;
 				double safeOGivenLoss = (double) safeO_lose[resultingBoard[4]]/ (double) lossCnt;
-
+				
+				//similarly for effect random variable
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
 				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt; 
+				
+				//probWin and probLoss calculation
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
 
-				//assuming independence so we simply multiply them 
+				//**********************LEARNED MODEL STATS ********************//
+				double homeXRatio = homeXGivenWin / (double) homeXGivenLoss;
+				double safeXRatio = safeXGivenWin / (double) safeXGivenLoss;
+				double homeORatio = homeOGivenWin / (double) homeOGivenLoss;
+				double safeORatio = safeOGivenWin / (double) safeOGivenLoss;
+				double effectRatio = effectGivenWin / (double) effectGivenLoss; 
+
+				// updating stats for the learned model outputting best ratios for the feautures or each random variable 
+				globalBestHomeX = Double.max(globalBestHomeX, homeXRatio);
+				globalBestHomeO = Double.max(globalBestHomeO, homeORatio);
+				globalBestSafeX = Double.max(globalBestSafeX, safeXRatio);
+				globalBestSafeO = Double.max(globalBestSafeO, safeORatio);
+				globalBestEffect =Double.max(globalBestEffect, effectRatio);
+
+				globalWorstHomeX = Double.min(globalWorstHomeX, homeXRatio);
+				globalWorstHomeO = Double.min(globalWorstHomeO, homeORatio);
+				globalWorstSafeX = Double.min(globalWorstSafeX, safeXRatio);
+				globalWorstSafeO = Double.min(globalWorstSafeO, safeORatio);
+				globalWorstEffect =Double.min(globalWorstEffect, effectRatio);
+
+				//assuming independence from Naive Bayes so we simply multiply them 
 				double bestWinProb = (homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
 						(double)     (homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
 
+				//determing next best move 
 				if (bestWinProb > bestProb) {
 					bestProb = bestWinProb; 
 					chosenMove = move; 
 				}
-
 			}
 		return chosenMove == null ? Utils.chooseRandomElementFromThisList(legalMoves): chosenMove; 
 	}
@@ -207,6 +238,7 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 			boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);
 			boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);
 
+			//updating counter for wins and losses 
 			if(didIwinThisGame) {
 				homeX_win[resultingBoard[1]]++;
 				safeX_win[resultingBoard[3]]++;
@@ -220,15 +252,24 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				safeO_lose[resultingBoard[4]]++;
 				effects_loss[effect]++;
 			}
-
 		}
-
 	}
-
 	@Override
 	public void reportLearnedModel() { // You can add some code here that reports what was learned, eg the most important feature for WIN and for LOSS.  And/or all the weights on your features.
 		Utils.println("\n-------------------------------------------------");
 		Utils.println(getPlayerName() + "learning model !!");		
+		Utils.print("\nBest Winning Ratio for effect: "+ globalBestEffect);
+		Utils.print("\nBest Winning Ratio for pieces at Home for X: "+globalBestHomeX );
+		Utils.print("\nBest Winning Ratio for pieces at Safe for X: "+globalBestSafeX );
+		Utils.print("\nBest Winnning Ratio for pieces at Home for O: "+globalBestHomeO );
+		Utils.print("\nBest Winning Ratio for pieces at Safe for O: "+ globalBestSafeO);
+
+		Utils.print("\nWorst Ratio for effect: "+ globalWorstEffect);
+		Utils.print("\nWorst Ratio for pieces at Home for X: "+globalWorstHomeX );
+		Utils.print("\nWorst Ratio for pieces at Safe for X: "+globalWorstSafeX );
+		Utils.print("\nWorst Ratio for pieces at Home for O: "+globalWorstHomeO );
+		Utils.print("\nWorst Ratio for pieces at Safe for O: "+ globalWorstSafeO);
+
 		Utils.println("\n-------------------------------------------------");
 	}
 }
