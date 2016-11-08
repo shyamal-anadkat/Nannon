@@ -10,20 +10,25 @@ import java.util.List;
  */
 
 /**
- * @author sanadkat
+ * @author shavlik
  *
  */
-public class HandCodedPlayer_ShyamalAnadkat extends NannonPlayer {
+public class GreedyHandCodedPlayer extends NannonPlayer {
 
-	public HandCodedPlayer_ShyamalAnadkat() {
+	/** 
+	 * You should rename this file to:  HandCodedPlayer_yourLoginName.java
+	 * 
+	 */
+	public GreedyHandCodedPlayer() {
 	}
 
-	public HandCodedPlayer_ShyamalAnadkat(NannonGameBoard gameBoard) {
+	public GreedyHandCodedPlayer(NannonGameBoard gameBoard) {
 		super(gameBoard);
 	}
 	@Override
-	public String getPlayerName() {		
-		return "Shyamal's Hand-Coded Player";
+	public String getPlayerName() {
+		// Choose your own name for your hand-coded player (ok to use your normal name or initials, but consider including  your login name so unique).		
+		return "JWS's Hand-Coded Player";
 	}
 
 	@Override
@@ -96,9 +101,9 @@ public class HandCodedPlayer_ShyamalAnadkat extends NannonPlayer {
 	
 	@Override
 	public void reportLearnedModel() {
-		Utils.println("\n--------------------------------------------------------------------------");
+		Utils.println("\n-------------------------------------------------");
 		Utils.println("\n I (" + getPlayerName() + ") was born smart enough and don't try to learn.");
-		Utils.println("\n--------------------------------------------------------------------------");
+		Utils.println("\n-------------------------------------------------");
 	}
 
 }

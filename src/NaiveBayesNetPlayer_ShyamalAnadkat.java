@@ -20,7 +20,6 @@ import java.util.List;
  */
 public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
-
 	/*******DECLARE RANDOM VARIABLES**********/
 	// Reference : lecture ppt (Jude Shavlik - 2016) 
 	private static int boardSize = NannonGameBoard.getCellsOnBoard(); //6
@@ -142,17 +141,12 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
 				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt; 
-				double stateOfBoardGivenWin; 
-				double stateOfBoardGivenLoss; 
-
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
-
 
 				//assuming independence so we simply multiply them 
 				double bestWinProb = (homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
 						(double)     (homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
-
 
 				if (bestWinProb > bestProb) {
 					bestProb = bestWinProb; 
@@ -160,7 +154,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				}
 
 			}
-
 		return chosenMove == null ? Utils.chooseRandomElementFromThisList(legalMoves): chosenMove; 
 	}
 
@@ -172,7 +165,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 			List<List<Integer>> allMovesThisGameForPlayer) {
 
 		// Do nothing with these in the random player (but hints are here for use in your players).	
-
 		// However, here are the beginnings of what you might want to do in your solution (see comments in 'chooseMove' as well).
 		// <------------ Be sure to remove this 'false' *********************************************************************
 		int numberOfMyMovesThisGame = allBoardConfigurationsThisGameForPlayer.size();	
@@ -181,15 +173,12 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		} else {
 			lossCnt++;
 		}
-
-
 		for (int myMove = 0; myMove < numberOfMyMovesThisGame; myMove++) {
 			int[]         currentBoard        = allBoardConfigurationsThisGameForPlayer.get(myMove);
 			int           numberPossibleMoves = allCountsOfPossibleMovesForPlayer.get(myMove);
 			List<Integer> moveChosen          = allMovesThisGameForPlayer.get(myMove);
 			int[]         resultingBoard      = (numberPossibleMoves < 1 ? currentBoard // No move possible, so board is unchanged.
 					: gameBoard.getNextBoardConfiguration(currentBoard, moveChosen));
-
 			// You should compute the statistics needed for a Bayes Net for any of these problem formulations:
 			//
 			//     prob(win | currentBoard and chosenMove and chosenMove's Effects)  <--- this is what I (Jude) did, but mainly because at that point I had not yet written getNextBoardConfiguration()

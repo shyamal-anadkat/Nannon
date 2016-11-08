@@ -15,15 +15,16 @@ import java.util.List;
 
 public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 
-	// 9 dimentions 
+	// 11 dimentions /RVs
 	// the first 6 RVs are state of each of six positions on board, 
 	// the 7th RV is the effect, 8th,9th,10th, 11th RV are num pieces at home and safety for X and O  
 	private int[][][][][][][][][][][] fullState_win = new int[3][3][3][3][3][3][12][4][4][4][4];
 	private int[][][][][][][][][][][] fullState_lost = new int[3][3][3][3][3][3][12][4][4][4][4];
 	private int[] best_config = new int[12];
-	//private int numWins = 1;    //Around K/10 where k is numCells
-	//private int numLosses = 1;  //Around K/10 
-	//private int numGames = 2;   //Explicit counter  
+	private int[] bad_config = new int[12];
+	private int numWins = 1;    //Around K/10 where k is numCells
+	private int numLosses = 1;  //Around K/10 
+	private int numGames = 2;   //Explicit counter 
 
 	//A good way to create your players is to edit these methods.  See PlayNannon.java for more details.
 	@Override
@@ -66,9 +67,13 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				}
 			}
 		}
-		//init with all zeros 
+		//init 
 		for(int i = 0; i < best_config.length; i++) {
 			best_config[i] = Integer.MIN_VALUE;
+		}
+		//init 
+		for(int i = 0; i < best_config.length; i++) {
+			best_config[i] = Integer.MAX_VALUE;
 		}
 	}
 	@SuppressWarnings("unused") // This prevents a warning from the "if (false)" below.
@@ -81,6 +86,7 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 		//      (c) gets the current and next board configurations.
 		List<Integer> chosenMove = null;
 		double best_prob = Integer.MIN_VALUE; 
+		double worst_prob = Integer.MAX_VALUE;
 		int numLegalMoves = legalMoves.size();
 
 		if (legalMoves != null) 
@@ -102,14 +108,8 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);  // Did this move lengthen (i.e., extend) an existing prime?
 				boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);  // Did this move CREATE a NEW prime? (A move cannot both extend and create a prime.)
 
-				// Note that you can compute other effects than the four above (but you need to do it from the info in boardConfiguration, resultingBoard, and move).
-
-				// See comments in updateStatistics() regarding how to use these.
 				int[] resultingBoard = gameBoard.getNextBoardConfiguration(boardConfiguration, move);  // You might choose NOT to use this - see updateStatistics().
 				int atHomeX = 0 , atSafeX = 0, dieVal = 0, atHomeO = 0, atSafeO = 0; 
-				//int numLegalMoveRV = numLegalMoves > 2 ? 1:0;
-
-
 				switch(NannonGameBoard.getWhoseTurn(resultingBoard)) {
 				case 2: //O's turn 
 					atHomeO = resultingBoard[2];
@@ -132,10 +132,12 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				double probOfWin = numWins/(double) (numWins+numLosses);
 				double probOfLoss = numLosses/(double) (numWins+numLosses);
 
+				double bestRatio = (double) probOfWin / (double) probOfLoss;
+
 
 				//update learned model statistics 
-				if(probOfWin >= best_prob) {
-					best_prob = probOfWin; 
+				if(bestRatio >= best_prob) {
+					best_prob = bestRatio; 
 					chosenMove = move; 
 					best_config[0] = resultingBoard[7];
 					best_config[1] = resultingBoard[8];
@@ -149,8 +151,25 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 					best_config[9] = atHomeO;
 					best_config[10] = atSafeO;
 					best_config[11] = dieVal;
+				} 
+				if(bestRatio < worst_prob) {
+					worst_prob = bestRatio;
+					bad_config[0] = resultingBoard[7];
+					bad_config[1] = resultingBoard[8];
+					bad_config[2] = resultingBoard[9];
+					bad_config[3] = resultingBoard[10];
+					bad_config[4] = resultingBoard[11];
+					bad_config[5] = resultingBoard[12];
+					bad_config[6] = effect;
+					bad_config[7] = atHomeX;
+					bad_config[8] = atSafeX;
+					bad_config[9] = atHomeO;
+					bad_config[10] = atSafeO;
+					bad_config[11] = dieVal;
 				}
-				/* Here is what is in a board configuration vector.  There are also accessor functions in NannonGameBoard.java (starts at or around line 60).
+
+			}
+		/* Here is what is in a board configuration vector.  There are also accessor functions in NannonGameBoard.java (starts at or around line 60).
 			   	boardConfiguration[0] = whoseTurn;        // Ignore, since it is OUR TURN when we play, by definition. (But needed to compute getNextBoardConfiguration.)
         		boardConfiguration[1] = homePieces_playerX; 
         		boardConfiguration[2] = homePieces_playerO;
@@ -158,11 +177,9 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
         		boardConfiguration[4] = safePieces_playerO;
         		boardConfiguration[5] = die_playerX;      // I added these early on, but never used them.
         		boardConfiguration[6] = die_playerO;      // Probably can be ignored since get the number of legal moves, which is more meaningful.
-
         		cells 7 to (6 + NannonGameBoard.cellsOnBoard) record what is on the board at each 'cell' (ie, board location).
         					- one of NannonGameBoard.playerX, NannonGameBoard.playerO, or NannonGameBoard.empty.
-				 */
-			}
+		 */
 		return chosenMove == null ? Utils.chooseRandomElementFromThisList(legalMoves):chosenMove;
 	}
 
@@ -213,7 +230,6 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 			boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);
 			boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);
 
-
 			switch(resultingBoard[0]) {
 			case 2: //O's turn 
 				atHomeO = resultingBoard[2];
@@ -237,12 +253,6 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 								[resultingBoard[12]][effect][atHomeX][atSafeX][atHomeO][atSafeO]++;
 			}
 		}
-		//incrementing wins and losses 
-		//if(didIwinThisGame) {
-		//	numWins++;
-		//} else {
-		//	numLosses++;
-		//}
 	}
 	@Override
 	public void reportLearnedModel() { // You can add some code here that reports what was learned, 
@@ -257,6 +267,14 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 		Utils.print("\nBest value for pieces at Home for O: "+best_config[9] );
 		Utils.print("\nBest value for pieces at Safe for O: "+best_config[10] );
 		Utils.print("\nBest Die Value: "+best_config[11]);
+		Utils.print("\nBad Values for Position 1 through 6 on board: "
+				+bad_config[0]+","+bad_config[1]+","+bad_config[2]+","+bad_config[3]+","+bad_config[4]+","+bad_config[5]);
+		Utils.print("\nBad Value for effect: "+best_config[6]);
+		Utils.print("\nBad value for pieces at Home for X: "+bad_config[7] );
+		Utils.print("\nBad value for pieces at Safe for X: "+bad_config[8] );
+		Utils.print("\nBad value for pieces at Home for O: "+bad_config[9] );
+		Utils.print("\nBad value for pieces at Safe for O: "+bad_config[10] );
+		Utils.print("\nBad Die Value: "+bad_config[11]);
 		Utils.println("\n--------------------------------------------------------------------------------------");
 		//tried with die value but got 64% and with effect got around 67%
 	}

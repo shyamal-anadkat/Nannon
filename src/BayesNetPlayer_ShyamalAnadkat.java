@@ -38,8 +38,8 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 
 	//holds p( state of pieces on board ) | win and 
 	//      p( state of pieces on board ) | !win and 
-	int board_win[][] = new int[boardSize][3]; //3 as X,O or blank 
-	int board_lose[][] = new int[boardSize][3];  
+	int board_win[][][][][][] = new int[3][3][3][3][3][3]; //3 as X,O or blank 
+	int board_lose[][][][][][] = new int[3][3][3][3][3][3];  
 
 	int winCnt = 1 ; //m-estimates 
 	int lossCnt = 1; 
@@ -70,10 +70,19 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		Arrays.fill(effects_win, 1);
 		Arrays.fill(effects_loss, 1);
 
-		for(int i = 0; i < board_win.length; i++) {
-			for(int j = 0; j < board_win[0].length; j++){
-				board_win[i][j] = 1; 
-				board_lose[i][j] = 1; 
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++){
+				for(int k = 0; k < 3 ; k++) {
+					for(int l = 0; l < 3 ; l++) {
+						for(int m = 0; m < 3; m++) {
+							for(int n = 0; n < 3; n++) {
+								board_win[i][j][k][l][m][n] = 1; 
+								board_lose[i][j][k][l][m][n] = 1; 
+							}
+						}
+					}
+				}
+
 			}
 		}
 	}
@@ -129,33 +138,47 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				 */
 
 				// P(Random Variable given Win) conditional probablities 
+				// WinCnt gives me higher success than prob of Win so Im sticking to this for now 
 				double homeXGivenWin = (double) homeX_win[resultingBoard[1]] /(double) winCnt;
 				double safeXGivenWin = (double) safeX_win[resultingBoard[3]]/ (double) winCnt;
 				double homeOGivenWin = (double) homeO_win[resultingBoard[2]] / (double) winCnt;
 				double safeOGivenWin = (double) safeO_win[resultingBoard[4]]/ (double) winCnt;
+				int boardGivenWin = board_win[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
+						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]];
+
+				double stateOfBoardGivenWin = (double)boardGivenWin /(double) winCnt ; 
 
 				// P(random variable given Loss) conditional probs 
 				double homeXGivenLoss = (double) homeX_lose[resultingBoard[1]] /(double) lossCnt;
 				double safeXGivenLoss = (double) safeX_lose[resultingBoard[3]]/ (double) lossCnt;
 				double homeOGivenLoss = (double) homeO_lose[resultingBoard[2]] / (double) lossCnt;
 				double safeOGivenLoss = (double) safeO_lose[resultingBoard[4]]/ (double) lossCnt;
+				int boardGivenLoss = board_lose[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
+						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]];
+
+				double stateOfBoardGivenLoss = (double)boardGivenLoss / (double) lossCnt ;
 
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
-				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt; 
-				double stateOfBoardGivenWin; 
-				double stateOfBoardGivenLoss; 
+				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt;  
+
+				
+
+
+				double beyondNBWin = homeX_win[resultingBoard[1]]* safeX_win[resultingBoard[3]]
+						* homeO_win[resultingBoard[2]]*safeO_win[resultingBoard[4]]* effects_win[effect]; 
+				double beyondNBLoss = homeX_lose[resultingBoard[1]]*
+						safeX_lose[resultingBoard[3]] *homeO_lose[resultingBoard[2]]*safeO_lose[resultingBoard[4]] ;
+
 
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
-
-
 				//assuming independence so we simply multiply them 
-				double bestWinProb = (homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
-						(double)     (homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
+				double bestOdds = ( homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
+						(double)     ( homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
 
 
-				if (bestWinProb > bestProb) {
-					bestProb = bestWinProb; 
+				if (bestOdds > bestProb) {
+					bestProb = bestOdds; 
 					chosenMove = move; 
 				}
 
@@ -213,7 +236,7 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 			int to   = (toCountingFromOne   == NannonGameBoard.movingToSAFETY ? 0 : toCountingFromOne);
 
 			// The 'effect' of move is encoded in these four booleans:
-			boolean hitOpponent = ManageMoveEffects.isaHit(      effect); // Explained in chooseMove() above.
+			boolean hitOpponent = ManageMoveEffects.isaHit(effect); // Explained in chooseMove() above.
 			boolean brokeMyPrime = ManageMoveEffects.breaksPrime( effect);
 			boolean extendsPrimeOfMine = ManageMoveEffects.extendsPrime(effect);
 			boolean createsPrimeOfMine = ManageMoveEffects.createsPrime(effect);
@@ -224,12 +247,17 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				homeO_win[resultingBoard[2]]++;
 				safeO_win[resultingBoard[4]]++;
 				effects_win[effect]++;
+				board_win[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
+						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]]++;
+
 			} else {
 				homeX_lose[resultingBoard[1]]++;
 				safeX_lose[resultingBoard[3]]++;
 				homeO_lose[resultingBoard[2]]++;
 				safeO_lose[resultingBoard[4]]++;
 				effects_loss[effect]++;
+				board_lose[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
+						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]]++;
 			}
 
 		}

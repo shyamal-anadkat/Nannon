@@ -111,15 +111,15 @@ public class PlayNannon {
 					// 	 "\n" +
 					"       greedyHandCoded                  A hand-coded player that performs slightly better (63% wins against random) than jshavlik_med but not as good as jshavlik_smart.\n" +
 					"\n" +
-					"       BayesNetPlayer_ShyamalAnadkat                   Use the player in class BayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
+					"       <someLoginName>                  Use the player in class BayesNetPlayer_someLoginName (must be in the same directory as this file)\n" +
 					"\n" + 
-					"       FullJointProbTablePlayer_ShyamalAnadkat Will use the player in FullJointProbTablePlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
+					"       FullJointProbTablePlayer_<login> Will use the player in FullJointProbTablePlayer_login (must be in the same directory as this file)\n" +
 					"\n" + 
-					"       BayesNetPlayer_ShyamalAnadkat           Will use the player in BayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
+					"       BayesNetPlayer_<login>           Will use the player in BayesNetPlayer_login (must be in the same directory as this file)\n" +
 					"\n" + 
-					"       NaiveBayesNetPlayer_ShyamalAnadkat     Will use the player in NaiveBayesNetPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
+					"       NaiveBayesNetPlayer_<login>      Will use the player in NaiveBayesNetPlayer_login (must be in the same directory as this file)\n" +
 					"\n" + 
-					"       HandCodedPlayer_ShyamalAnadkat   Will use the (non-learning) player in HandCodedPlayer_ShyamalAnadkat (must be in the same directory as this file)\n" +
+					"       HandCodedPlayer_<someLoginName>  Will use the (non-learning) player in HandCodedPlayer_someLoginName (must be in the same directory as this file)\n" +
 					"\n" +          
 					"   - if only ONE argument provided, the second argument defaults to random\n" +
 					"\n" +  
@@ -141,18 +141,17 @@ public class PlayNannon {
 		Nannon.setReportLearnedModels(true); // When done, should the players report on what they learned?  Can be useful for debugging.
 		// YOU SHOULD DETERMINE THE MOST IMPORTANT FEATURES (and report at least the top two - one for WIN and one for LOSE - in your project report).
 
+
 		NannonGameBoard.setCellsOnBoard(6);    // Define the game-board configuration.
 		NannonGameBoard.setPiecesPerPlayer(3);
 
 		if (argsRaw.length > 2) { 
-			Utils.error("Too many arguments provided: " 
-					+ Utils.converStringListToString(argsRaw) + "\n" + argsSpecString + "\n"); 
+			Utils.error("Too many arguments provided: " + Utils.converStringListToString(argsRaw) + "\n" + argsSpecString + "\n"); 
 		}
 
 		String[] args = Utils.chopCommentFromArgs(argsRaw);
-		String arg1 = "random";
-		String arg2 = "BayesNetPlayer_ShyamalAnadkat"; // See argsSpecString for other options.
-		//String   arg2 = "FullJointProbTablePlayer_Hayhurst";
+		String   arg1 = "FullJointProbTablePlayer_ShyamalAnadkat"; // See argsSpecString for other options.
+		String   arg2 = "random";
 
 		if (args.length >= 1) { arg1 = args[0]; } // Override the defaults if args provided.
 		if (args.length >= 2) { arg2 = args[1]; }
@@ -160,8 +159,8 @@ public class PlayNannon {
 		// If you print a LOT, comment this out (Utils.java will also stop 'dribbling' if more than 10M characters are printed).
 		Utils.createDribbleFile("dribbleFiles/PlayNannonMain_" + Utils.getUserName() + ".txt");
 
-		int numberPostBurninGamesToPlay =    1000 * 1000;
-		Nannon.setNumberOfGamesInBurnInPhase( 100 * 1000); // This (i.e. 100k) is a good number for experiments, but when debugging might want to set this to 0.
+		int numberPostBurninGamesToPlay =    1000*1000;// * 1000;
+		Nannon.setNumberOfGamesInBurnInPhase( 1000*100); // This (i.e. 100k) is a good number for experiments, but when debugging might want to set this to 0.
 		Nannon.setGamesToPlay(numberPostBurninGamesToPlay + Nannon.getNumberOfGamesInBurnInPhase()); // Maybe play 5M (or 10M) games after the burn-in if doing a long run.		
 
 		Nannon.setUseGUItoWatch(true);       // Set this to 'true' to watch the two players after some burn-in training.
