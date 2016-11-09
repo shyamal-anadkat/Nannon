@@ -45,6 +45,17 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	private double globalBestHomeX, globalBestHomeO, globalBestSafeX, globalBestSafeO, globalBestEffect = Integer.MIN_VALUE;
 	private double globalWorstHomeX, globalWorstHomeO, globalWorstSafeX, globalWorstSafeO, globalWorstEffect = Integer.MAX_VALUE;
 
+	int extendPrime_win = 1;
+	int createPrime_win = 1;
+	int extendPrime_lose = 1;
+	int createPrime_lose = 1;
+	int hitOpponent_win = 1;
+	int brokeMyPrime_win= 1; 
+	int hitOpponent_lose = 1;
+	int brokeMyPrime_lose= 1; 
+	int brokeAndHit_win = 1; 
+	int brokeAndHit_lose = 1; 
+
 	@Override
 	public String getPlayerName() { return "Shyamal's Bayes Net Player"; }
 
@@ -123,10 +134,33 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				 */
 				// P(Random Variable given Win) conditional probablities 
 				// WinCnt gives me higher success than prob of Win so Im sticking to this for now 
+				double ho_win =1 , ho_lose = 1;
+				double bp_win = 1,bp_lose = 1; 
+				double ep_win = 1 , ep_lose= 1; 
+				double cp_win = 1,cp_lose = 1;
+				double bh_win = 1, bh_lose = 1;
+
 				double homeXGivenWin = (double) homeX_win[resultingBoard[1]] /(double) winCnt;
 				double safeXGivenWin = (double) safeX_win[resultingBoard[3]]/ (double) winCnt;
 				double homeOGivenWin = (double) homeO_win[resultingBoard[2]] / (double) winCnt;
 				double safeOGivenWin = (double) safeO_win[resultingBoard[4]]/ (double) winCnt;
+
+				if (hitOpponent) {
+					ho_win = (double) hitOpponent_win / (double) winCnt;
+				}
+				if (brokeMyPrime) {
+					bp_win = (double) brokeMyPrime_win / (double) winCnt;
+				}
+				if (extendsPrimeOfMine) {
+					ep_win= (double) extendPrime_win / (double) winCnt;
+				}
+				if (createsPrimeOfMine) {
+					cp_win = (double) createPrime_win / (double) winCnt;
+				}
+
+				if (hitOpponent & brokeMyPrime) {
+					bh_win = (double) brokeAndHit_win / winCnt;
+				}
 
 
 				// P(random variable given Loss) conditional probs 
@@ -135,10 +169,26 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double homeOGivenLoss = (double) homeO_lose[resultingBoard[2]] / (double) lossCnt;
 				double safeOGivenLoss = (double) safeO_lose[resultingBoard[4]]/ (double) lossCnt;
 
+				if (hitOpponent) {
+					ho_lose= (double) hitOpponent_lose / (double) lossCnt;
+				}
+				if (brokeMyPrime) {
+					bp_lose = (double) brokeMyPrime_lose / (double) lossCnt;
+				}
+				if (extendsPrimeOfMine) {
+					ep_lose= (double) extendPrime_lose / (double) lossCnt;
+				}
+				if (createsPrimeOfMine) {
+					cp_lose = (double) createPrime_lose / (double) lossCnt;
+				}
+
+				if (hitOpponent & brokeMyPrime) {
+					bh_lose = (double) brokeAndHit_lose / (double) lossCnt;
+				}
+
 
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
 				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt;  
-
 
 
 				//**********************LEARNED MODEL STATS ********************//
@@ -169,13 +219,12 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double beyondNBLoss =(homeX_lose[resultingBoard[1]]*
 						safeX_lose[resultingBoard[3]] *homeO_lose[resultingBoard[2]]*safeO_lose[resultingBoard[4]]) /(double) lossCnt ;
 
-
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
 				//assuming independence so we simply multiply them 
-				double bestOdds = ( beyondNBWin* homeXGivenWin * 
+				double bestOdds = ( ho_win * bp_win* cp_win* ep_win * bh_win* beyondNBWin* homeXGivenWin * 
 						safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
-						(double)     ( beyondNBLoss* homeXGivenLoss * 
+						(double)     ( beyondNBLoss* bp_lose*  ho_lose * cp_lose* ep_lose * bh_lose* homeXGivenLoss * 
 								safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
 
 				if (bestOdds > bestProb) {
@@ -248,12 +297,46 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				homeO_win[resultingBoard[2]]++;
 				safeO_win[resultingBoard[4]]++;
 				effects_win[effect]++;
+				if (hitOpponent) {
+					hitOpponent_win++;
+				}
+				if (brokeMyPrime) {
+					brokeMyPrime_win++;
+				}
+				if (extendsPrimeOfMine) {
+					extendPrime_lose++;
+				}
+				if (createsPrimeOfMine) {
+					createPrime_win++;
+				}
+
+				if (hitOpponent & brokeMyPrime) {
+					brokeAndHit_win++;
+				}
+
+
 			} else {
 				homeX_lose[resultingBoard[1]]++;
 				safeX_lose[resultingBoard[3]]++;
 				homeO_lose[resultingBoard[2]]++;
 				safeO_lose[resultingBoard[4]]++;
 				effects_loss[effect]++;
+				if (hitOpponent) {
+					hitOpponent_lose++;
+				}
+				if (brokeMyPrime) {
+					brokeMyPrime_lose++;
+				}
+				if (extendsPrimeOfMine) {
+					extendPrime_lose++;
+				}
+				if (createsPrimeOfMine) {
+					createPrime_lose++;
+				}
+
+				if (hitOpponent & brokeMyPrime) {
+					brokeAndHit_lose++;
+				}
 			}
 		}
 	}
