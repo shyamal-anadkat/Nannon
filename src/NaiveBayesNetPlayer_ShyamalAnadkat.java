@@ -35,10 +35,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	int safeO_win[] = new int[pieces+1];   //holds p(safeO=? | !win)
 	int safeO_lose[] = new int[pieces+1];  //holds p(safeO=? | !win)
 
-	//holds p( state of pieces on board ) | win and 
-	//      p( state of pieces on board ) | !win and 
-	int board_win[][] = new int[boardSize][3]; //3 as X,O or blank 
-	int board_lose[][] = new int[boardSize][3];  
 
 	//best and worst configs for learned models 
 	int best_config[] = new int[6];
@@ -78,12 +74,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		Arrays.fill(effects_win, 1);
 		Arrays.fill(effects_loss, 1);
 
-		for(int i = 0; i < board_win.length; i++) {
-			for(int j = 0; j < board_win[0].length; j++){
-				board_win[i][j] = 1; 
-				board_lose[i][j] = 1; 
-			}
-		}
 	}
 
 	@SuppressWarnings("unused") // This prevents a warning from the "if (false)" below.
@@ -146,11 +136,11 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double safeXGivenLoss = (double) safeX_lose[resultingBoard[3]]/ (double) lossCnt;
 				double homeOGivenLoss = (double) homeO_lose[resultingBoard[2]] / (double) lossCnt;
 				double safeOGivenLoss = (double) safeO_lose[resultingBoard[4]]/ (double) lossCnt;
-				
+
 				//similarly for effect random variable
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
 				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt; 
-				
+
 				//probWin and probLoss calculation
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
@@ -194,7 +184,6 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 			List<int[]>         allBoardConfigurationsThisGameForPlayer,
 			List<Integer>       allCountsOfPossibleMovesForPlayer,
 			List<List<Integer>> allMovesThisGameForPlayer) {
-
 		// Do nothing with these in the random player (but hints are here for use in your players).	
 		// However, here are the beginnings of what you might want to do in your solution (see comments in 'chooseMove' as well).
 		// <------------ Be sure to remove this 'false' *********************************************************************

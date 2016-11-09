@@ -36,14 +36,14 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	int safeO_win[] = new int[pieces+1];   //holds p(safeO=? | !win)
 	int safeO_lose[] = new int[pieces+1];  //holds p(safeO=? | !win)
 
-	//holds p( state of pieces on board ) | win and 
-	//      p( state of pieces on board ) | !win and 
-	int board_win[][][][][][] = new int[3][3][3][3][3][3]; //3 as X,O or blank 
-	int board_lose[][][][][][] = new int[3][3][3][3][3][3];  
-
 	int winCnt = 1 ; //m-estimates 
 	int lossCnt = 1; 
 	double globalBestOdds = Integer.MIN_VALUE;
+	//best and worst configs for learned models 
+	int best_config[] = new int[6];
+	int bad_config[] = new int[6];
+	private double globalBestHomeX, globalBestHomeO, globalBestSafeX, globalBestSafeO, globalBestEffect = Integer.MIN_VALUE;
+	private double globalWorstHomeX, globalWorstHomeO, globalWorstSafeX, globalWorstSafeO, globalWorstEffect = Integer.MAX_VALUE;
 
 	@Override
 	public String getPlayerName() { return "Shyamal's Bayes Net Player"; }
@@ -71,21 +71,6 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		Arrays.fill(effects_win, 1);
 		Arrays.fill(effects_loss, 1);
 
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < 3; j++){
-				for(int k = 0; k < 3 ; k++) {
-					for(int l = 0; l < 3 ; l++) {
-						for(int m = 0; m < 3; m++) {
-							for(int n = 0; n < 3; n++) {
-								board_win[i][j][k][l][m][n] = 1; 
-								board_lose[i][j][k][l][m][n] = 1; 
-							}
-						}
-					}
-				}
-
-			}
-		}
 	}
 
 	@SuppressWarnings("unused") // This prevents a warning from the "if (false)" below.
@@ -142,47 +127,66 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				double safeXGivenWin = (double) safeX_win[resultingBoard[3]]/ (double) winCnt;
 				double homeOGivenWin = (double) homeO_win[resultingBoard[2]] / (double) winCnt;
 				double safeOGivenWin = (double) safeO_win[resultingBoard[4]]/ (double) winCnt;
-				int boardGivenWin = board_win[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
-						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]];
 
-				double stateOfBoardGivenWin = (double)boardGivenWin /(double) winCnt ; 
 
 				// P(random variable given Loss) conditional probs 
 				double homeXGivenLoss = (double) homeX_lose[resultingBoard[1]] /(double) lossCnt;
 				double safeXGivenLoss = (double) safeX_lose[resultingBoard[3]]/ (double) lossCnt;
 				double homeOGivenLoss = (double) homeO_lose[resultingBoard[2]] / (double) lossCnt;
 				double safeOGivenLoss = (double) safeO_lose[resultingBoard[4]]/ (double) lossCnt;
-				int boardGivenLoss = board_lose[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
-						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]];
 
-				double stateOfBoardGivenLoss = (double)boardGivenLoss / (double) lossCnt ;
 
 				double effectGivenWin = (double) effects_win[effect]/(double) winCnt; 
 				double effectGivenLoss = (double) effects_loss[effect] /(double) lossCnt;  
 
-				double beyondNBWin = homeX_win[resultingBoard[1]]* safeX_win[resultingBoard[3]]
-						* homeO_win[resultingBoard[2]]*safeO_win[resultingBoard[4]]* effects_win[effect]; 
-				double beyondNBLoss = homeX_lose[resultingBoard[1]]*
-						safeX_lose[resultingBoard[3]] *homeO_lose[resultingBoard[2]]*safeO_lose[resultingBoard[4]] ;
+
+
+				//**********************LEARNED MODEL STATS ********************//
+				double homeXRatio = homeXGivenWin / (double) homeXGivenLoss;
+				double safeXRatio = safeXGivenWin / (double) safeXGivenLoss;
+				double homeORatio = homeOGivenWin / (double) homeOGivenLoss;
+				double safeORatio = safeOGivenWin / (double) safeOGivenLoss;
+				double effectRatio = effectGivenWin / (double) effectGivenLoss; 
+
+				// updating stats for the learned model outputting best ratios for the feautures or each random variable 
+				globalBestHomeX = Double.max(globalBestHomeX, homeXRatio);
+				globalBestHomeO = Double.max(globalBestHomeO, homeORatio);
+				globalBestSafeX = Double.max(globalBestSafeX, safeXRatio);
+				globalBestSafeO = Double.max(globalBestSafeO, safeORatio);
+				globalBestEffect = Double.max(globalBestEffect, effectRatio);
+
+				globalWorstHomeX = Double.min(globalWorstHomeX, homeXRatio);
+				globalWorstHomeO = Double.min(globalWorstHomeO, homeORatio);
+				globalWorstSafeX = Double.min(globalWorstSafeX, safeXRatio);
+				globalWorstSafeO = Double.min(globalWorstSafeO, safeORatio);
+				globalWorstEffect =Double.min(globalWorstEffect, effectRatio);
+
+
+				//We have a NB now we need to work on the dependencies between some of the nodes or the random
+				//variables. We work on P (RV1 ^ RV2^ RV3 ..... | WIN) 
+				double beyondNBWin = (homeX_win[resultingBoard[1]]* safeX_win[resultingBoard[3]]
+						* homeO_win[resultingBoard[2]]*safeO_win[resultingBoard[4]]* effects_win[effect] ) / (double) winCnt; 
+				double beyondNBLoss =(homeX_lose[resultingBoard[1]]*
+						safeX_lose[resultingBoard[3]] *homeO_lose[resultingBoard[2]]*safeO_lose[resultingBoard[4]]) /(double) lossCnt ;
 
 
 				double probWin = (double)winCnt / (double) (winCnt + lossCnt);
 				double probLoss = (double)lossCnt / (double) (winCnt + lossCnt);
 				//assuming independence so we simply multiply them 
-				double bestOdds = ( beyondNBWin* homeXGivenWin * safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
-						(double)     ( beyondNBLoss* homeXGivenLoss * safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
+				double bestOdds = ( beyondNBWin* homeXGivenWin * 
+						safeXGivenWin * homeOGivenWin* safeOGivenWin * effectGivenWin * probWin)/ 
+						(double)     ( beyondNBLoss* homeXGivenLoss * 
+								safeXGivenLoss * homeOGivenLoss* safeOGivenLoss * effectGivenLoss* probLoss);
 
 				if (bestOdds > bestProb) {
 					bestProb = bestOdds; 
 					chosenMove = move; 
 				}
-
+				//updating best odds for learned model 
 				if(bestOdds > globalBestOdds) {
 					globalBestOdds = bestOdds;
 				}
-
 			}
-
 		return chosenMove == null ? Utils.chooseRandomElementFromThisList(legalMoves): chosenMove; 
 	}
 
@@ -244,21 +248,14 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 				homeO_win[resultingBoard[2]]++;
 				safeO_win[resultingBoard[4]]++;
 				effects_win[effect]++;
-				board_win[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
-						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]]++;
-
 			} else {
 				homeX_lose[resultingBoard[1]]++;
 				safeX_lose[resultingBoard[3]]++;
 				homeO_lose[resultingBoard[2]]++;
 				safeO_lose[resultingBoard[4]]++;
 				effects_loss[effect]++;
-				board_lose[resultingBoard[7]] [resultingBoard[8]][resultingBoard[9]]
-						[resultingBoard[10]][resultingBoard[11]][resultingBoard[12]]++;
 			}
-
 		}
-
 	}
 
 	@Override
@@ -266,6 +263,17 @@ public class BayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		Utils.println("\n-------------------------------------------------");
 		Utils.println(getPlayerName() + "learning model !!");	
 		Utils.println("Best winning odds: "+globalBestOdds);
+		Utils.print("\nBest Winning Ratio for effect: "+ globalBestEffect);
+		Utils.print("\nBest Winning Ratio for pieces at Home for X: "+globalBestHomeX );
+		Utils.print("\nBest Winning Ratio for pieces at Safe for X: "+globalBestSafeX );
+		Utils.print("\nBest Winnning Ratio for pieces at Home for O: "+globalBestHomeO );
+		Utils.print("\nBest Winning Ratio for pieces at Safe for O: "+ globalBestSafeO);
+
+		Utils.print("\nWorst Ratio for effect: "+ globalWorstEffect);
+		Utils.print("\nWorst Ratio for pieces at Home for X: "+globalWorstHomeX );
+		Utils.print("\nWorst Ratio for pieces at Safe for X: "+globalWorstSafeX );
+		Utils.print("\nWorst Ratio for pieces at Home for O: "+globalWorstHomeO );
+		Utils.print("\nWorst Ratio for pieces at Safe for O: "+ globalWorstSafeO);
 		Utils.println("\n-------------------------------------------------");
 	}
 }

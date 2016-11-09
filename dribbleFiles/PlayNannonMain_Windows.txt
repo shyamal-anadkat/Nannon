@@ -4,6 +4,39 @@ NannonGUI:  setBounds: width = 633, height = 404
 % This is the console of the Nannon GUI.
 % (Do a control-C here if the program appears to be hanging.)
 
-500,000 post burn-in games played so far.  Took 7 seconds.
-  Player X (BayesNetPlayer_rasmith9) won 285,682 games (57.14%) and
-  Player O (Random-Move Player) won 214,317 games (42.86%).
+500,000 post burn-in games played so far.  Took 6 seconds.
+  Player X (Shyamal's Bayes Net Player) won 266,785 games (53.36%) and
+  Player O (Random-Move Player) won 233,214 games (46.64%).
+1,000,000 post burn-in games played so far.  Took 11 seconds.
+  Player X (Shyamal's Bayes Net Player) won 533,522 games (53.35%) and
+  Player O (Random-Move Player) won 466,477 games (46.65%).
+
+Player X (Shyamal's Bayes Net Player) won 533,523 games (53.35%) and Player O (Random-Move Player) won 466,477 games (46.65%).
+It took 11 seconds to play 1,100,000 games. The numberOfGamesInBurnInPhase = 100,000.
+    The mean number of turns per game:                      6.96  // These stats are for post burn-in games only.
+    The mean number of no-possible-moves per game for X:    0.20
+    The mean number of no-possible-moves per game for O:    0.23
+    The mean number of forced moves per game for X:         2.70
+    The mean number of forced moves per game for O:         2.73
+
+-------------------------------------------------
+Shyamal's Bayes Net Playerlearning model !!
+Best winning odds: 3.380085839910809E7
+
+Best Winning Ratio for effect: 2.223437101127064
+Best Winning Ratio for pieces at Home for X: 1.535092985325058
+Best Winning Ratio for pieces at Safe for X: 1.5013049433801127
+Best Winnning Ratio for pieces at Home for O: 7.316118888525784
+Best Winning Ratio for pieces at Safe for O: 1.430122006973398
+Worst Ratio for effect: 0.6144678241118221
+Worst Ratio for pieces at Home for X: 0.0
+Worst Ratio for pieces at Safe for X: 0.0
+Worst Ratio for pieces at Home for O: 0.0
+Worst Ratio for pieces at Safe for O: 0.0
+-------------------------------------------------
+
+-------------------------------------------------
+
+Sorry, I (Random-Move Player) wasn't paying attention and didn't learn a thing ...
+
+-------------------------------------------------

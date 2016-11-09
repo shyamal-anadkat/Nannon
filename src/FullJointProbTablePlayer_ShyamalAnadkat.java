@@ -27,7 +27,6 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 	public FullJointProbTablePlayer_ShyamalAnadkat() { 
 		initialize();
 	}
-
 	public FullJointProbTablePlayer_ShyamalAnadkat(NannonGameBoard gameBoard) {
 		super(gameBoard);
 		initialize();
@@ -126,8 +125,7 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				double probOfLoss = numLosses/(double) (numWins+numLosses);
 
 				double bestRatio = (double) probOfWin / (double) probOfLoss;
-
-
+				
 				//update learned model statistics 
 				if(bestRatio >= best_prob) {
 					best_prob = bestRatio; 
@@ -199,7 +197,6 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 			List<Integer> moveChosen          = allMovesThisGameForPlayer.get(myMove);
 			int[]         resultingBoard      = (numberPossibleMoves < 1 ? currentBoard // No move possible, so board is unchanged.
 					: gameBoard.getNextBoardConfiguration(currentBoard, moveChosen));
-
 			// You should compute the statistics needed for a Bayes Net for any of these problem formulations:
 			//
 			//     prob(win | currentBoard and chosenMove and chosenMove's Effects)  <--- this is what I (Jude) did, but mainly because at that point I had not yet written getNextBoardConfiguration()
