@@ -91,7 +91,6 @@ import java.util.Random;
  *              won't use them for the FullJointProbTablePlayer.
  *  
  */
-
 public class PlayNannon {
 
 	static String argsSpecString =  
@@ -141,7 +140,6 @@ public class PlayNannon {
 		Nannon.setReportLearnedModels(true); // When done, should the players report on what they learned?  Can be useful for debugging.
 		// YOU SHOULD DETERMINE THE MOST IMPORTANT FEATURES (and report at least the top two - one for WIN and one for LOSE - in your project report).
 
-
 		NannonGameBoard.setCellsOnBoard(6);    // Define the game-board configuration.
 		NannonGameBoard.setPiecesPerPlayer(3);
 
@@ -160,7 +158,7 @@ public class PlayNannon {
 		Utils.createDribbleFile("dribbleFiles/PlayNannonMain_" + Utils.getUserName() + ".txt");
 
 		int numberPostBurninGamesToPlay =    1000*1000;// * 1000;
-		Nannon.setNumberOfGamesInBurnInPhase( 1000*100); // This (i.e. 100k) is a good number for experiments, but when debugging might want to set this to 0.
+		Nannon.setNumberOfGamesInBurnInPhase(1000); // This (i.e. 100k) is a good number for experiments, but when debugging might want to set this to 0.
 		Nannon.setGamesToPlay(numberPostBurninGamesToPlay + Nannon.getNumberOfGamesInBurnInPhase()); // Maybe play 5M (or 10M) games after the burn-in if doing a long run.		
 
 		Nannon.setUseGUItoWatch(true);       // Set this to 'true' to watch the two players after some burn-in training.

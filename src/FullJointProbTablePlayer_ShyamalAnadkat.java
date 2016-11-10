@@ -1,10 +1,13 @@
 
-/**
- * SAnadkat
- */
+
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * FullJointProbTablePlayer_ShyamalAnadkat HW3
+ * @author SAnadkat
+ *
+ */
 public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 
 	// 11 dimentions /RVs
@@ -14,8 +17,8 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 	private int[][][][][][][][][][][] fullState_lost = new int[3][3][3][3][3][3][12][4][4][4][4];
 	private int[] best_config = new int[12];
 	private int[] bad_config = new int[12];
-	private double globalBest = Integer.MIN_VALUE;
-	private double globalWorst = Integer.MAX_VALUE;
+	private double globalBest = Double.MIN_VALUE;
+	private double globalWorst = Double.MAX_VALUE;
 	private int numWins = 1;    //Around K/10 where k is numCells
 	private int numLosses = 1;  //Around K/10 
 	private int numGames = 2;   //Explicit counter 
@@ -60,23 +63,18 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				}
 			}
 		}
-		//init 
+		//init with min
 		for(int i = 0; i < best_config.length; i++) {
 			best_config[i] = Integer.MIN_VALUE;
 		}
-		//init 
-		for(int i = 0; i < best_config.length; i++) {
-			best_config[i] = Integer.MAX_VALUE;
+		//init with max
+		for(int i = 0; i < bad_config.length; i++) {
+			bad_config[i] = Integer.MAX_VALUE;
 		}
 	}
 	@SuppressWarnings("unused") // This prevents a warning from the "if (false)" below.
 	@Override
 	public List<Integer> chooseMove(int[] boardConfiguration, List<List<Integer>> legalMoves) {
-		// Below is some code you might want to use in your solution.
-		//      (a) converts to zero-based counting for the cell locations
-		//      (b) converts NannonGameBoard.movingFromHOME and NannonGameBoard.movingToSAFE to NannonGameBoard.cellsOnBoard,
-		//          (so you could then make arrays with dimension NannonGameBoard.cellsOnBoard+1)
-		//      (c) gets the current and next board configurations.
 		List<Integer> chosenMove = null;
 		double best_prob = Integer.MIN_VALUE; 
 		int numLegalMoves = legalMoves.size();
@@ -102,6 +100,8 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 
 				int[] resultingBoard = gameBoard.getNextBoardConfiguration(boardConfiguration, move);  // You might choose NOT to use this - see updateStatistics().
 				int atHomeX = 0 , atSafeX = 0, dieVal = 0, atHomeO = 0, atSafeO = 0; 
+
+				//update random variables depending on X or O's turn 
 				switch(NannonGameBoard.getWhoseTurn(resultingBoard)) {
 				case 2: //O's turn 
 					atHomeO = resultingBoard[2];
@@ -125,21 +125,24 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				double probOfLoss = numLosses/(double) (numWins+numLosses);
 
 				double bestRatio = (double) probOfWin / (double) probOfLoss;
-				
+
 				//update learned model statistics 
 				if(bestRatio >= best_prob) {
 					best_prob = bestRatio; 
 					chosenMove = move; 
 
 				} 
+				//all the moves for a bad ratio are bad moves 
 				if(bestRatio < globalWorst) {
 					globalWorst = bestRatio;
+					//all the 6 spots on board 
 					bad_config[0] = resultingBoard[7];
 					bad_config[1] = resultingBoard[8];
 					bad_config[2] = resultingBoard[9];
 					bad_config[3] = resultingBoard[10];
 					bad_config[4] = resultingBoard[11];
 					bad_config[5] = resultingBoard[12];
+
 					bad_config[6] = effect;
 					bad_config[7] = atHomeX;
 					bad_config[8] = atSafeX;
@@ -149,12 +152,14 @@ public class FullJointProbTablePlayer_ShyamalAnadkat extends NannonPlayer {
 				} 
 				if (bestRatio > globalBest) {
 					globalBest = bestRatio; 
+					// all 6 six spots on the board
 					best_config[0] = resultingBoard[7];
 					best_config[1] = resultingBoard[8];
 					best_config[2] = resultingBoard[9];
 					best_config[3] = resultingBoard[10];
 					best_config[4] = resultingBoard[11];
 					best_config[5] = resultingBoard[12];
+
 					best_config[6] = effect;
 					best_config[7] = atHomeX;
 					best_config[8] = atSafeX;

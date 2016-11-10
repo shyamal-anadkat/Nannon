@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 
+ * NaiveBayesNetPlayer_ShyamalAnadkat HW3
  * @author SAnadkat
  *
  */
@@ -34,13 +34,15 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 	int homeO_lose[] = new int[pieces+1];  //holds p(homeO=? | !win)
 	int safeO_win[] = new int[pieces+1];   //holds p(safeO=? | !win)
 	int safeO_lose[] = new int[pieces+1];  //holds p(safeO=? | !win)
-
+	//*****************************************/
 
 	//best and worst configs for learned models 
 	int best_config[] = new int[6];
 	int bad_config[] = new int[6];
-	private double globalBestHomeX, globalBestHomeO, globalBestSafeX, globalBestSafeO, globalBestEffect = Integer.MIN_VALUE;
-	private double globalWorstHomeX, globalWorstHomeO, globalWorstSafeX, globalWorstSafeO, globalWorstEffect = Integer.MAX_VALUE;
+	private double globalBestHomeX= Double.MIN_VALUE, globalBestHomeO= Double.MIN_VALUE, 
+			globalBestSafeX= Double.MIN_VALUE, globalBestSafeO= Double.MIN_VALUE, globalBestEffect = Double.MIN_VALUE;
+	private double globalWorstHomeX= Double.MAX_VALUE, 
+			globalWorstHomeO= Double.MAX_VALUE, globalWorstSafeX= Double.MAX_VALUE, globalWorstSafeO= Double.MAX_VALUE, globalWorstEffect = Double.MAX_VALUE;
 
 	int winCnt = 1 ; //m-estimates 
 	int lossCnt = 1; 
@@ -244,7 +246,7 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		}
 	}
 	@Override
-	public void reportLearnedModel() { // You can add some code here that reports what was learned, eg the most important feature for WIN and for LOSS.  And/or all the weights on your features.
+	public void reportLearnedModel() {
 		Utils.println("\n-------------------------------------------------");
 		Utils.println(getPlayerName() + "learning model !!");		
 		Utils.print("\nBest Winning Ratio for effect: "+ globalBestEffect);
@@ -252,13 +254,11 @@ public class NaiveBayesNetPlayer_ShyamalAnadkat extends NannonPlayer {
 		Utils.print("\nBest Winning Ratio for pieces at Safe for X: "+globalBestSafeX );
 		Utils.print("\nBest Winnning Ratio for pieces at Home for O: "+globalBestHomeO );
 		Utils.print("\nBest Winning Ratio for pieces at Safe for O: "+ globalBestSafeO);
-
 		Utils.print("\nWorst Ratio for effect: "+ globalWorstEffect);
 		Utils.print("\nWorst Ratio for pieces at Home for X: "+globalWorstHomeX );
 		Utils.print("\nWorst Ratio for pieces at Safe for X: "+globalWorstSafeX );
 		Utils.print("\nWorst Ratio for pieces at Home for O: "+globalWorstHomeO );
 		Utils.print("\nWorst Ratio for pieces at Safe for O: "+ globalWorstSafeO);
-
 		Utils.println("\n-------------------------------------------------");
 	}
 }
