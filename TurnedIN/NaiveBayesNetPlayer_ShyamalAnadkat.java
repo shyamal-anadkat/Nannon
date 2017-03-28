@@ -1,15 +1,3 @@
-/**
- * Copyrighted 2013 by Jude Shavlik.  Maybe be freely used for non-profit educational purposes.
- */
-
-/*
- * A player that simply random chooses from among the possible moves.
- * 
- * NOTE: I (Jude) recommend you COPY THIS TO YOUR PLAYER (NannonPlayer_yourLoginName.java) AND THEN EDIT IN THAT FILE.
- * 
- *       Be sure to change "Random-Move Player" in getPlayerName() to something unique to you!
- */
-
 import java.util.Arrays;
 import java.util.List;
 
